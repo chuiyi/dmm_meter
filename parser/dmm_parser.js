@@ -51,7 +51,10 @@ exports.parseVideo = function(url, callback) {
 			video.title = $('h1#title').text();
 			video.cid = video.link.split("cid=")[1].split("/")[0];
 			video.img_cover = 'http://pics.dmm.co.jp/digital/video/' + video.cid + '/' + video.cid + 'pl.jpg'
-			video.number = video.cid.match(/[a-zA-Z]+|[0-9]+/g);
+			var number = video.cid.match(/[a-zA-Z]+|[0-9]+/g);
+			video.number_array = number;
+			video.number = number[number.length - 2] + '-' + getNumberWithDigit(parseInt(number[number.length - 1]), 3);
+			video.number = video.number.toUpperCase();
 
 			var info = $('table.mg-b20');
 			info.find('tr').each(function(i, elem) {
@@ -139,7 +142,9 @@ exports.parseVideo = function(url, callback) {
 				});
 				//http://pics.dmm.co.jp/digital/video/idbd00334/idbd00334-1.jpg
 				//http://pics.dmm.co.jp/digital/video/idbd00334/idbd00334jp-1.jpg
+
 			});
+			video.filename = '[' + video.makers[0].name + '] ' + video.title + ' (' + video.number + ')';
 
 			if (callback)
 				callback(video);
@@ -151,3 +156,11 @@ String.prototype.replaceAll = function(search, replacement) {
     var target = this;
     return target.replace(new RegExp(search, 'g'), replacement);
 };
+
+function getNumberWithDigit(number, digit) {
+	var result = String(number);
+	while (result.length < digit) {
+		result = '0' + result;
+	}
+	return result;
+}
